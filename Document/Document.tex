@@ -1,0 +1,121 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+% --- Global, editable parameters ---
+\newlength{\DominoW}     \setlength{\DominoW}{11cm}   % total width
+\newlength{\DominoH}     \setlength{\DominoH}{3.2cm}  % height
+\newlength{\DominoPad}   \setlength{\DominoPad}{4mm}  % inner padding
+\newlength{\DominoLineW} \setlength{\DominoLineW}{0.8pt} % stroke/line width
+
+% Helper: minipage with height correctly computed via \dimexpr
+\newcommand{\DominoCell}[2]{% #1 = width, #2 = content
+	\begin{minipage}[c][\dimexpr\DominoH-2\DominoPad\relax]{#1}
+		\centering
+		#2
+	\end{minipage}%
+}
+
+% --- DOMINO with straight divider ---
+\newcommand{\Domino}[2]{%
+	\begin{tikzpicture}[baseline=(base)]
+		\coordinate (base) at (0,0);
+		
+		% outer rectangle
+		\draw[line width=\DominoLineW, rounded corners=2mm]
+		(0,0) rectangle (\DominoW,\DominoH);
+		
+		% divider line (computed with TikZ calc)
+		\draw[line width=\DominoLineW]
+		($ (0,0)!0.5!(\DominoW,0) $) -- ($ (0,\DominoH)!0.5!(\DominoW,\DominoH) $);
+		
+		% contents: cell width = 0.5\DominoW - 2\DominoPad (via \dimexpr)
+		\node[inner sep=\DominoPad, anchor=south west] at (0,0) {%
+			\DominoCell{\dimexpr 0.5\DominoW-2\DominoPad\relax}{#1}%
+		};
+		\node[inner sep=\DominoPad, anchor=south west] at ($ (0,0)!0.5!(\DominoW,0) $) {%
+			\DominoCell{\dimexpr 0.5\DominoW-2\DominoPad\relax}{#2}%
+		};
+	\end{tikzpicture}%
+}
+
+% --- DOMINO with "puzzle" divider ---
+\newcommand{\PuzzleDomino}[2]{%
+	\begin{tikzpicture}[baseline=(base)]
+		\coordinate (base) at (0,0);
+		
+		\draw[line width=\DominoLineW, rounded corners=2mm]
+		(0,0) rectangle (\DominoW,\DominoH);
+		
+		% vertical midpoint and height center (computed with calc)
+		\coordinate (MIDBOT) at ($ (0,0)!0.5!(\DominoW,0) $);
+		\coordinate (MIDTOP) at ($ (0,\DominoH)!0.5!(\DominoW,\DominoH) $);
+		\coordinate (MID)    at ($ (0,0)!0.5!(\DominoW,\DominoH) $);
+		
+		% puzzle curve parameters (valid TeX dimensions: mm)
+		\def\amp{7mm}
+		\def\hseg{7mm}
+		
+		% Curve: from bottom (MIDBOT) to top (MIDTOP), passing near MID
+		\draw[line width=\DominoLineW]
+		(MIDBOT)
+		.. controls ($ (MID) + (0,-\hseg) $) and ($ (MID) + (\amp,-\hseg) $) ..
+		($ (MID) + (\amp,0) $)
+		.. controls ($ (MID) + (\amp,\hseg) $) and ($ (MID) + (0,\hseg) $) ..
+		(MIDTOP);
+		
+		% contents
+		\node[inner sep=\DominoPad, anchor=south west] at (0,0) {%
+			\DominoCell{\dimexpr 0.5\DominoW-2\DominoPad\relax}{#1}%
+		};
+		\node[inner sep=\DominoPad, anchor=south west] at (MIDBOT) {%
+			\DominoCell{\dimexpr 0.5\DominoW-2\DominoPad\relax}{#2}%
+		};
+	\end{tikzpicture}%
+}
+
+\begin{document}
+	
+	\section*{Examples}
+	
+	Default line width: \the\DominoLineW
+	
+	\bigskip
+	
+	\Domino{%
+		\Large \textbf{MICROPHONE}\\[2mm]
+		\normalsize (any text you like)
+	}{%
+		\Large \textbf{RECORDS YOUR}\\
+		\Large \textbf{VOICE AND}\\
+		\Large \textbf{SOUNDS.}
+	}
+	
+	\bigskip\bigskip
+	
+	\PuzzleDomino{%
+		\includegraphics[width=2.2cm]{example-image-a}\\[1mm]
+		\small Image + text
+	}{%
+		\textbf{Right-side content}\\
+		\small Formula: \(E=mc^2\)
+	}
+	
+	\bigskip\bigskip
+	
+	% Example of changing the stroke:
+	\setlength{\DominoLineW}{3pt}
+	
+	Thicker line width: \the\DominoLineW
+	
+	\bigskip
+	
+	\PuzzleDomino{Left}{Right}
+	
+\end{document}
