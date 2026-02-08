@@ -235,4 +235,6 @@ A small LaTeX/TikZ macro to generate domino-style tiles with two customizable pa
 
 </summary>
 
-<\details>
+![image_0001](https://github.com/R0mb0/Domino_Tiles_Generator_for_LaTeX/blob/main/Readme_Imgs/0001.png?raw=true)
+
+</details>
