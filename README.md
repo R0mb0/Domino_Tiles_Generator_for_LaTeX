@@ -1,4 +1,4 @@
-# Domino_Tiles_Generator_for_LaTeX
+# Domino Tiles Generator for LaTeX
 
 [![made-with-latex](https://img.shields.io/badge/Made%20with-LaTeX-1f425f.svg)](https://www.latex-project.org/)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/37afa0c2f0954cb9b9797792df484d93)](https://app.codacy.com/gh/R0mb0/Domino_Tiles_Generator_for_LaTeX/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
