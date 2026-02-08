@@ -1,2 +1,96 @@
 # Domino_Tiles_Generator_for_LaTeX
+
+[![made-with-latex](https://img.shields.io/badge/Made%20with-LaTeX-1f425f.svg)](https://www.latex-project.org/)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/37afa0c2f0954cb9b9797792df484d93)](https://app.codacy.com/gh/R0mb0/Domino_Tiles_Generator_for_LaTeX/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/R0mb0/Italian_Manuscripts_Kraken_OCR_Report)
+[![Open Source Love svg3](https://badges.frapsoft.com/os/v3/open-source.svg?v=103)](https://github.com/R0mb0/Italian_Manuscripts_Kraken_OCR_Report)
+[![Donate](https://img.shields.io/badge/PayPal-Donate%20to%20Author-blue.svg)](http://paypal.me/R0mb0)
+![License](https://img.shields.io/badge/license-CC0%201.0-blue.svg?style=plastic)
+
 A small LaTeX/TikZ macro to generate domino-style tiles with two customizable panels. Each half can contain text or images, and an optional “puzzle” wavy divider is available for a jigsaw-like look. Includes a ready-to-compile example. 
+
+## 👉 Code
+
+```latex
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+% --- Global, editable parameters ---
+\newlength{\DominoW}  \setlength{\DominoW}{11cm}  % total width
+\newlength{\DominoH}  \setlength{\DominoH}{3.2cm} % height
+\newlength{\DominoPad}\setlength{\DominoPad}{4mm} % inner padding
+
+% Helper: minipage with height correctly computed via \dimexpr
+\newcommand{\DominoCell}[2]{% #1 = width, #2 = content
+  \begin{minipage}[c][\dimexpr\DominoH-2\DominoPad\relax]{#1}
+    \centering
+    #2
+  \end{minipage}%
+}
+
+% --- DOMINO with straight divider ---
+\newcommand{\Domino}[2]{%
+\begin{tikzpicture}[baseline=(base)]
+  \coordinate (base) at (0,0);
+
+  % outer rectangle
+  \draw[line width=0.8pt, rounded corners=2mm]
+    (0,0) rectangle (\DominoW,\DominoH);
+
+  % divider line (computed with TikZ calc)
+  \draw[line width=0.8pt]
+    ($ (0,0)!0.5!(\DominoW,0) $) -- ($ (0,\DominoH)!0.5!(\DominoW,\DominoH) $);
+
+  % contents: cell width = 0.5\DominoW - 2\DominoPad (via \dimexpr)
+  \node[inner sep=\DominoPad, anchor=south west] at (0,0) {%
+    \DominoCell{\dimexpr 0.5\DominoW-2\DominoPad\relax}{#1}%
+  };
+  \node[inner sep=\DominoPad, anchor=south west] at ($ (0,0)!0.5!(\DominoW,0) $) {%
+    \DominoCell{\dimexpr 0.5\DominoW-2\DominoPad\relax}{#2}%
+  };
+\end{tikzpicture}%
+}
+
+% --- DOMINO with "puzzle" divider ---
+\newcommand{\PuzzleDomino}[2]{%
+\begin{tikzpicture}[baseline=(base)]
+  \coordinate (base) at (0,0);
+
+  \draw[line width=0.8pt, rounded corners=2mm]
+    (0,0) rectangle (\DominoW,\DominoH);
+
+  % vertical midpoint and height center (computed with calc)
+  \coordinate (MIDBOT) at ($ (0,0)!0.5!(\DominoW,0) $);
+  \coordinate (MIDTOP) at ($ (0,\DominoH)!0.5!(\DominoW,\DominoH) $);
+  \coordinate (MID)    at ($ (0,0)!0.5!(\DominoW,\DominoH) $);
+
+  % puzzle curve parameters (valid TeX dimensions: mm)
+  \def\amp{7mm}
+  \def\hseg{7mm}
+
+  % Curve: from bottom (MIDBOT) to top (MIDTOP), passing near MID
+  \draw[line width=0.8pt]
+    (MIDBOT)
+    .. controls ($ (MID) + (0,-\hseg) $) and ($ (MID) + (\amp,-\hseg) $) ..
+    ($ (MID) + (\amp,0) $)
+    .. controls ($ (MID) + (\amp,\hseg) $) and ($ (MID) + (0,\hseg) $) ..
+    (MIDTOP);
+
+  % contents
+  \node[inner sep=\DominoPad, anchor=south west] at (0,0) {%
+    \DominoCell{\dimexpr 0.5\DominoW-2\DominoPad\relax}{#1}%
+  };
+  \node[inner sep=\DominoPad, anchor=south west] at (MIDBOT) {%
+    \DominoCell{\dimexpr 0.5\DominoW-2\DominoPad\relax}{#2}%
+  };
+\end{tikzpicture}%
+}
+```
